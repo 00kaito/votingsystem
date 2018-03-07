@@ -56,26 +56,35 @@ public class ProjectService {
         if (voteList.size() == 0) {
             return new ProjectDetailsDto();
         }
+        Boolean projectVotedAtLeastOnce = false;
+        for (Vote v : voteList) {
+            if(v.getProject().getId().equals(projectId)){
+                projectVotedAtLeastOnce=true;
+            }
+        }
+        if (!projectVotedAtLeastOnce)
+            return new ProjectDetailsDto();
+
         ProjectDetailsDto projectDetailsDto = new ProjectDetailsDto();
         modelMapper.map(projectOptional.get(), projectDetailsDto);
-        Integer[] votesProAndAgainst = getVotesValues();
+        Integer[] votesProAndAgainst = getVotesValues(projectId);
         projectDetailsDto.setVotesPro(votesProAndAgainst[0]);
         projectDetailsDto.setVotesAgainst(votesProAndAgainst[1]);
         return projectDetailsDto;
     }
 
-    private Integer[] getVotesValues() {
+    private Integer[] getVotesValues(Long projectId) {
         List<Vote> voteList = voteRepository.findAll();
         Integer votesPro = 0;
         Integer votesAgainst = 0;
 
         for (Vote v : voteList) {
-            if (v.getVoteValue() != 0)
+            if (v.getProject().getId().equals(projectId) && v.getVoteValue() != 0)
                 votesPro++;
-            if (v.getVoteValue() == 0)
+            if (v.getProject().getId().equals(projectId) && v.getVoteValue() == 0)
                 votesAgainst++;
         }
-        return new Integer[] {votesPro, votesAgainst};
+        return new Integer[]{votesPro, votesAgainst};
     }
 
     @Autowired
