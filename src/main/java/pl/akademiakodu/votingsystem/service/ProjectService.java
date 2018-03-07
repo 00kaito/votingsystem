@@ -25,7 +25,6 @@ public class ProjectService {
     public List<ProjectDto> getListOfProjectsDto() {
         List<Project> projectList = projectRepository.findAllByOrderByProjectName();
         List<ProjectDto> projectDtoList = new ArrayList<>();
-        System.out.println(projectList.size());
         for (Project project : projectList) {
             projectDtoList.add(modelMapper.map(project, ProjectDto.class));
         }
